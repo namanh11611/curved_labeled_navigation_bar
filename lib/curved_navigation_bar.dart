@@ -65,6 +65,9 @@ class CurvedNavigationBar extends StatefulWidget {
   /// This defines the horizontal scaling of the curve, controlling how wide the curve (or notch) will be.
   final double? curveWidthScale;
 
+  /// Border radius of the [CurvedNavigationBar].
+  final BorderRadius? borderRadius;
+
   CurvedNavigationBar({
     Key? key,
     required this.items,
@@ -79,6 +82,7 @@ class CurvedNavigationBar extends StatefulWidget {
     this.iconPadding = 12.0,
     this.selectedButtonOffset = 105.0,
     this.buttonElevation = 0.0,
+    this.borderRadius,
     this.gradient,
     this.curveDepth,
     this.curveWidthScale,
@@ -192,7 +196,8 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                 startingLoc: _pos,
                 itemsLength: _length,
                 color: widget.color,
-                curveWidthScale: widget.curveWidthScale ?? 0.2,
+                borderRadius: widget.borderRadius,
+                curveWidthScale: widget.curveWidthScale,
                 curveDepth: widget.curveDepth,
                 gradient: widget.gradient,
                 textDirection: Directionality.of(context),

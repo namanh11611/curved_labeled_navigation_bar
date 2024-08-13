@@ -10,6 +10,7 @@ class NavCustomPainter extends CustomPainter {
   double? curveDepth; // Make curve depth optional
   double? curveWidthScale; // Make curve width scale optional
   TextDirection textDirection;
+  BorderRadius? borderRadius; // Add border radius parameter
 
   NavCustomPainter({
     required double startingLoc,
@@ -20,6 +21,7 @@ class NavCustomPainter extends CustomPainter {
     required this.textDirection,
     this.hasLabel = false,
     this.curveWidthScale,
+    this.borderRadius, // Accept border radius as an optional parameter
   }) {
     curveWidthScale = curveWidthScale ?? 0.2; // Default value if not provided
     final span = 1.0 / itemsLength;
@@ -43,6 +45,19 @@ class NavCustomPainter extends CustomPainter {
       paint.color = color;
     }
 
+    // Create the rounded rectangle
+    final roundedRect = RRect.fromRectAndCorners(
+      rect,
+      topLeft: borderRadius?.topLeft ?? Radius.zero,
+      topRight: borderRadius?.topRight ?? Radius.zero,
+      bottomLeft: borderRadius?.bottomLeft ?? Radius.zero,
+      bottomRight: borderRadius?.bottomRight ?? Radius.zero,
+    );
+
+    // Clip the canvas to the rounded rectangle
+    canvas.clipRRect(roundedRect);
+
+    // Create path for the custom shape
     final path = Path()
       ..moveTo(0, 0)
       ..lineTo(size.width * (loc - 0.05), 0)
@@ -66,6 +81,8 @@ class NavCustomPainter extends CustomPainter {
       ..lineTo(size.width, size.height)
       ..lineTo(0, size.height)
       ..close();
+
+    // Draw the path
     canvas.drawPath(path, paint);
   }
 
