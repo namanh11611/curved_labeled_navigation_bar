@@ -11,7 +11,7 @@ class NavCustomPainter extends CustomPainter {
   double? curveWidthScale; // Make curve width scale optional
   TextDirection textDirection;
   BorderRadius? borderRadius; // Add border radius parameter
-
+  double horizontalContentPadding; // Add horizontal content padding parameterC
   NavCustomPainter({
     required double startingLoc,
     required int itemsLength,
@@ -21,6 +21,8 @@ class NavCustomPainter extends CustomPainter {
     required this.textDirection,
     this.hasLabel = false,
     this.curveWidthScale,
+    this.horizontalContentPadding =
+        0, // Accept horizontal content padding as an optional parameter
     this.borderRadius, // Accept border radius as an optional parameter
   }) {
     curveWidthScale = curveWidthScale ?? 0.2; // Default value if not provided
@@ -35,6 +37,8 @@ class NavCustomPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    Size customSize =
+        Size(size.width - 2 * horizontalContentPadding, size.height);
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     final paint = Paint()..style = PaintingStyle.fill;
 
@@ -60,21 +64,27 @@ class NavCustomPainter extends CustomPainter {
     // Create path for the custom shape
     final path = Path()
       ..moveTo(0, 0)
-      ..lineTo(size.width * (loc - 0.05), 0)
+      ..lineTo(customSize.width * (loc - 0.05) + horizontalContentPadding,
+          0) // Adjust left side of notch
       ..cubicTo(
-        size.width * (loc + curveWidthScale! * 0.2), // topX
-        size.height * 0.05, // topY
-        size.width * loc, // bottomX
-        size.height * bottom, // bottomY
-        size.width * (loc + curveWidthScale! * 0.5), // centerX
-        size.height * bottom, // centerY
+        customSize.width * (loc + curveWidthScale! * 0.2) +
+            horizontalContentPadding, // topX
+        customSize.height * 0.05, // topY
+        customSize.width * loc + horizontalContentPadding, // bottomX
+        customSize.height * bottom, // bottomY
+        customSize.width * (loc + curveWidthScale! * 0.5) +
+            horizontalContentPadding, // centerX
+        customSize.height * bottom, // centerY
       )
       ..cubicTo(
-        size.width * (loc + curveWidthScale!), // bottomX
-        size.height * bottom, // bottomY
-        size.width * (loc + curveWidthScale! * 0.8), // topX
-        size.height * 0.05, // topY
-        size.width * (loc + curveWidthScale! + 0.05),
+        customSize.width * (loc + curveWidthScale!) +
+            horizontalContentPadding, // bottomX
+        customSize.height * bottom, // bottomY
+        customSize.width * (loc + curveWidthScale! * 0.8) +
+            horizontalContentPadding, // topX
+        customSize.height * 0.05, // topY
+        customSize.width * (loc + curveWidthScale! + 0.05) +
+            horizontalContentPadding, // Adjust right side of notch
         0,
       )
       ..lineTo(size.width, 0)
