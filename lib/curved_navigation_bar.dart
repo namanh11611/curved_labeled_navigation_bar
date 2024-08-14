@@ -25,6 +25,9 @@ class CurvedNavigationBar extends StatefulWidget {
   /// The color of [CurvedNavigationBar]'s background, default Colors.blueAccent.
   final Color backgroundColor;
 
+  /// The gradient of the [CurvedNavigationBar] itself.
+  final Gradient? gradient;
+
   /// Called when one of the [items] is tapped.
   final ValueChanged<int>? onTap;
 
@@ -48,6 +51,26 @@ class CurvedNavigationBar extends StatefulWidget {
   /// Check if [CurvedNavigationBar] has label.
   final bool hasLabel;
 
+  /// Offset of selected button, default 105.0.
+  final double selectedButtonOffset;
+
+  /// Elevation of floating button, default 0.0.
+  final double buttonElevation;
+
+  /// Depth of the curve (notch).
+  /// This defines how deep the curve (or notch) will extend vertically into the navigation bar.
+  final double? curveDepth;
+
+  /// Scale of the curve's width.
+  /// This defines the horizontal scaling of the curve, controlling how wide the curve (or notch) will be.
+  final double? curveWidthScale;
+
+  /// Border radius of the [CurvedNavigationBar].
+  final BorderRadius? borderRadius;
+
+  /// Horizontal padding of content in [CurvedNavigationBar]. Default 0.0.
+  final double horizontalContentPadding;
+
   CurvedNavigationBar({
     Key? key,
     required this.items,
@@ -60,6 +83,13 @@ class CurvedNavigationBar extends StatefulWidget {
     this.animationCurve = Curves.easeOut,
     this.animationDuration = const Duration(milliseconds: 600),
     this.iconPadding = 12.0,
+    this.selectedButtonOffset = 105.0,
+    this.buttonElevation = 0.0,
+    this.borderRadius,
+    this.gradient,
+    this.curveDepth,
+    this.horizontalContentPadding = 0.0,
+    this.curveWidthScale,
     double? height,
   })  : assert(items.isNotEmpty),
         assert(0 <= index && index < items.length),
@@ -127,28 +157,32 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final size = Size(
+      MediaQuery.of(context).size.width - 2 * widget.horizontalContentPadding,
+      MediaQuery.of(context).size.height,
+    );
     return Container(
-      color: widget.backgroundColor,
       height: widget.height,
+      color: widget.backgroundColor,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.bottomCenter,
         children: <Widget>[
           // Selected button
           Positioned(
-            bottom: widget.height - 105.0,
+            bottom: widget.height - widget.selectedButtonOffset,
             left: Directionality.of(context) == TextDirection.rtl
                 ? null
-                : _pos * size.width,
+                : _pos * size.width + widget.horizontalContentPadding,
             right: Directionality.of(context) == TextDirection.rtl
-                ? _pos * size.width
+                ? _pos * size.width + widget.horizontalContentPadding
                 : null,
             width: size.width / _length,
             child: Center(
               child: Transform.translate(
                 offset: Offset(0, (_buttonHide - 1) * 80),
                 child: Material(
+                  elevation: widget.buttonElevation,
                   color: widget.buttonBackgroundColor ?? widget.color,
                   type: MaterialType.circle,
                   child: Padding(
@@ -168,7 +202,12 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
               painter: NavCustomPainter(
                 startingLoc: _pos,
                 itemsLength: _length,
+                horizontalContentPadding: widget.horizontalContentPadding,
                 color: widget.color,
+                borderRadius: widget.borderRadius,
+                curveWidthScale: widget.curveWidthScale,
+                curveDepth: widget.curveDepth,
+                gradient: widget.gradient,
                 textDirection: Directionality.of(context),
                 hasLabel: widget.hasLabel,
               ),
@@ -180,7 +219,10 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
             left: 0,
             right: 0,
             bottom: 0,
-            child: SizedBox(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: widget.horizontalContentPadding,
+              ),
               height: widget.height,
               child: Row(
                 children: widget.items.map((item) {
