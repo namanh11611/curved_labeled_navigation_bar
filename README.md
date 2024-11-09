@@ -1,15 +1,18 @@
-# curved_navigation_bar
-[pub package](https://pub.dartlang.org/packages/curved_navigation_bar)
+# curved_labeled_navigation_bar
+[pub package](https://pub.dartlang.org/packages/curved_labeled_navigation_bar)
 
-A Flutter package for easy implementation of curved navigation bar. 
+A Flutter package for easy implementation of curved navigation bar.
+This package is a fork of the original curved_navigation_bar from https://github.com/rafalbednarczuk/curved_navigation_bar with label for CurvedNavigationBarItem.
 
-![Gif](https://github.com/rafalbednarczuk/curved_navigation_bar/blob/master/example.gif "Fancy Gif")
+| Label                                                                                                                       | No Label                                                                                                                          |
+|-----------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| ![Gif](https://raw.githubusercontent.com/namanh11611/curved_labeled_navigation_bar/refs/heads/master/label.gif "Label Gif") | ![Gif](https://raw.githubusercontent.com/namanh11611/curved_labeled_navigation_bar/refs/heads/master/no_label.gif "No Label Gif") |
 
 ### Add dependency
 
 ```yaml
 dependencies:
-  curved_navigation_bar: ^1.0.6 #latest version
+  curved_labeled_navigation_bar: ^2.0.3 #latest version
 ```
 
 ### Easy to use
@@ -18,13 +21,30 @@ dependencies:
 Scaffold(
   bottomNavigationBar: CurvedNavigationBar(
     backgroundColor: Colors.blueAccent,
-    items: <Widget>[
-      Icon(Icons.add, size: 30),
-      Icon(Icons.list, size: 30),
-      Icon(Icons.compare_arrows, size: 30),
+    items: [
+      CurvedNavigationBarItem(
+        child: Icon(Icons.home_outlined),
+        label: 'Home',
+      ),
+      CurvedNavigationBarItem(
+        child: Icon(Icons.search),
+        label: 'Search',
+      ),
+      CurvedNavigationBarItem(
+        child: Icon(Icons.chat_bubble_outline),
+        label: 'Chat',
+      ),
+      CurvedNavigationBarItem(
+        child: Icon(Icons.newspaper),
+        label: 'Feed',
+      ),
+      CurvedNavigationBarItem(
+        child: Icon(Icons.perm_identity),
+        label: 'Personal',
+      ),
     ],
     onTap: (index) {
-      //Handle button tap
+      // Handle button tap
     },
   ),
   body: Container(color: Colors.blueAccent),
@@ -33,23 +53,35 @@ Scaffold(
 
 ### Attributes
 
-`items`: List of Widgets\
-`index`: index of NavigationBar, can be used to change current index or to set initial index\
-`color`: Color of NavigationBar, default Colors.white\
-`buttonBackgroundColor`: background color of floating button, default same as color attribute\
-`backgroundColor`: Color of NavigationBar's background, default Colors.blueAccent\
-`onTap`: Function handling taps on items\
-`animationCurve`: Curves interpolating button change animation, default Curves.easeOutCubic\
-`animationDuration`: Duration of button change animation, default Duration(milliseconds: 600)\
-`height`: Height of NavigationBar, min 0.0, max 75.0\
-`maxWidth`: Allows to set the width of the navigation bar lower than the entire screen width by default\
-`letIndexChange`: Function which takes page index as argument and returns bool. If function returns false then page is not changed on button tap. It returns true by default\
+#### CurvedNavigationBar
 
+| Attribute               | Description                                                                                                                                                |
+|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `items`                 | List of CurvedNavigationBarItem                                                                                                                            |
+| `index`                 | Index of NavigationBar, can be used to change current index or to set initial index                                                                        |
+| `color`                 | Color of NavigationBar, default Colors.white                                                                                                               |
+| `buttonBackgroundColor` | Background color of floating button, default same as color attribute                                                                                       |
+| `backgroundColor`       | Color of NavigationBar's background, default Colors.blueAccent                                                                                             |
+| `onTap`                 | Function handling taps on items                                                                                                                            |
+| `letIndexChange`        | Function which takes page index as argument and returns bool. If function returns false then page is not changed on button tap. It returns true by default |
+| `animationCurve`        | Curves interpolating button change animation, default Curves.easeOut                                                                                       |
+| `animationDuration`     | Duration of button change animation, default Duration(milliseconds: 600)                                                                                   |
+| `height`                | Height of NavigationBar                                                                                                                                    |
+| `maxWidth`              | Allows to set the width of the navigation bar lower than the entire screen width by default                                                                |
+| `iconPadding`           | Padding of icon in floating button                                                                                                                         |
+
+#### CurvedNavigationBarItem
+
+| Attribute    | Description                     |
+|--------------|---------------------------------|
+| `child`      | Icon of CurvedNavigationBarItem |
+| `label`      | Text of CurvedNavigationBarItem |
+| `labelStyle` | TextStyle for label             |
 
 ### Change page programmatically
 
 ```dart
- //State class
+ // State class
   int _page = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
@@ -58,10 +90,27 @@ Scaffold(
     return Scaffold(
         bottomNavigationBar: CurvedNavigationBar(
           key: _bottomNavigationKey,
-          items: <Widget>[
-            Icon(Icons.add, size: 30),
-            Icon(Icons.list, size: 30),
-            Icon(Icons.compare_arrows, size: 30),
+          items: [
+            CurvedNavigationBarItem(
+              child: Icon(Icons.home_outlined),
+              label: 'Home',
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(Icons.search),
+              label: 'Search',
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(Icons.chat_bubble_outline),
+              label: 'Chat',
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(Icons.newspaper),
+              label: 'Feed',
+            ),
+            CurvedNavigationBarItem(
+              child: Icon(Icons.perm_identity),
+              label: 'Personal',
+            ),
           ],
           onTap: (index) {
             setState(() {
@@ -78,7 +127,7 @@ Scaffold(
                 ElevatedButton(
                   child: Text('Go To Page of index 1'),
                   onPressed: () {
-                    //Page change using state does the same as clicking index 1 navigation button
+                    // Page change using state does the same as clicking index 1 navigation button
                     final CurvedNavigationBarState? navBarState =
                         _bottomNavigationKey.currentState;
                     navBarState?.setPage(1);
@@ -87,6 +136,7 @@ Scaffold(
               ],
             ),
           ),
-        ));
+        ),
+    );
   }
 ```

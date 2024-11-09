@@ -1,3 +1,15 @@
+## [2.0.3]
+- Integrate original changes
+
+## [2.0.2]
+- update README and format code
+
+## [2.0.1]
+- add dart doc
+
+## [2.0.0]
+- add label
+
 ## [1.0.6]
 - set minimum flutter sdk version to 3.10.0 to support MediaQuery.sizeOf
 

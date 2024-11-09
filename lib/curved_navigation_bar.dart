@@ -1,24 +1,57 @@
+import 'dart:io';
 import 'dart:math';
 
-import 'package:curved_navigation_bar/src/nav_custom_clipper.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
+import 'package:curved_labeled_navigation_bar/src/nav_bar_item_widget.dart';
+import 'package:curved_labeled_navigation_bar/src/nav_custom_clipper.dart';
 import 'package:flutter/material.dart';
-import 'src/nav_button.dart';
+
 import 'src/nav_custom_painter.dart';
 
 typedef _LetIndexPage = bool Function(int value);
 
 class CurvedNavigationBar extends StatefulWidget {
-  final List<Widget> items;
+  /// Defines the appearance of the [CurvedNavigationBarItem] list that are
+  /// arrayed within the bottom navigation bar.
+  final List<CurvedNavigationBarItem> items;
+
+  /// The index into [items] for the current active [CurvedNavigationBarItem].
   final int index;
+
+  /// The color of the [CurvedNavigationBar] itself, default Colors.white.
   final Color color;
+
+  /// The background color of floating button, default same as [color] attribute.
   final Color? buttonBackgroundColor;
+
+  /// The color of [CurvedNavigationBar]'s background, default Colors.blueAccent.
   final Color backgroundColor;
+
+  /// Called when one of the [items] is tapped.
   final ValueChanged<int>? onTap;
+
+  /// Function which takes page index as argument and returns bool. If function
+  /// returns false then page is not changed on button tap. It returns true by
+  /// default.
   final _LetIndexPage letIndexChange;
+
+  /// Curves interpolating button change animation, default Curves.easeOut.
   final Curve animationCurve;
+
+  /// Duration of button change animation, default Duration(milliseconds: 600).
   final Duration animationDuration;
+
+  /// Height of [CurvedNavigationBar].
   final double height;
+
+  /// Max width of [CurvedNavigationBar].
   final double? maxWidth;
+
+  /// Padding of icon in floating button.
+  final double iconPadding;
+
+  /// Check if [CurvedNavigationBar] has label.
+  final bool hasLabel;
 
   CurvedNavigationBar({
     Key? key,
@@ -31,13 +64,15 @@ class CurvedNavigationBar extends StatefulWidget {
     _LetIndexPage? letIndexChange,
     this.animationCurve = Curves.easeOut,
     this.animationDuration = const Duration(milliseconds: 600),
-    this.height = 75.0,
+    this.iconPadding = 12.0,
     this.maxWidth,
+    double? height,
   })  : letIndexChange = letIndexChange ?? ((_) => true),
         assert(items.isNotEmpty),
         assert(0 <= index && index < items.length),
-        assert(0 <= height && height <= 75.0),
         assert(maxWidth == null || 0 <= maxWidth),
+        height = height ?? (Platform.isAndroid ? 70.0 : 80.0),
+        hasLabel = items.any((item) => item.label != null),
         super(key: key);
 
   @override
@@ -49,15 +84,15 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
   late double _startingPos;
   late int _endingIndex;
   late double _pos;
-  double _buttonHide = 0;
   late Widget _icon;
   late AnimationController _animationController;
   late int _length;
+  double _buttonHide = 0;
 
   @override
   void initState() {
     super.initState();
-    _icon = widget.items[widget.index];
+    _icon = widget.items[widget.index].child;
     _length = widget.items.length;
     _pos = widget.index / _length;
     _startingPos = widget.index / _length;
@@ -69,7 +104,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
         final endingPos = _endingIndex / widget.items.length;
         final middle = (endingPos + _startingPos) / 2;
         if ((endingPos - _pos).abs() < (_startingPos - _pos).abs()) {
-          _icon = widget.items[_endingIndex];
+          _icon = widget.items[_endingIndex].child;
         }
         _buttonHide =
             (1 - ((middle - _pos) / (_startingPos - middle)).abs()).abs();
@@ -84,11 +119,14 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
       final newPosition = widget.index / _length;
       _startingPos = _pos;
       _endingIndex = widget.index;
-      _animationController.animateTo(newPosition,
-          duration: widget.animationDuration, curve: widget.animationCurve);
+      _animationController.animateTo(
+        newPosition,
+        duration: widget.animationDuration,
+        curve: widget.animationCurve,
+      );
     }
     if (!_animationController.isAnimating) {
-      _icon = widget.items[_endingIndex];
+      _icon = widget.items[_endingIndex].child;
     }
   }
 
@@ -123,7 +161,7 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                   alignment: Alignment.bottomCenter,
                   children: <Widget>[
                     Positioned(
-                      bottom: -40 - (75.0 - widget.height),
+                      bottom: widget.height - 105.0,
                       left: textDirection == TextDirection.rtl
                           ? null
                           : _pos * maxWidth,
@@ -133,49 +171,55 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
                       width: maxWidth / _length,
                       child: Center(
                         child: Transform.translate(
-                          offset: Offset(
-                            0,
-                            -(1 - _buttonHide) * 80,
-                          ),
+                          offset: Offset(0, (_buttonHide - 1) * 80),
                           child: Material(
                             color: widget.buttonBackgroundColor ?? widget.color,
                             type: MaterialType.circle,
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(widget.iconPadding),
                               child: _icon,
                             ),
                           ),
                         ),
                       ),
                     ),
+                    // Background
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0 - (75.0 - widget.height),
+                      bottom: 0,
                       child: CustomPaint(
                         painter: NavCustomPainter(
-                            _pos, _length, widget.color, textDirection),
-                        child: Container(
-                          height: 75.0,
+                          startingLoc: _pos,
+                          itemsLength: _length,
+                          color: widget.color,
+                          textDirection: Directionality.of(context),
+                          hasLabel: widget.hasLabel,
                         ),
+                        child: Container(height: widget.height),
                       ),
                     ),
+                    // Unselected buttons
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0 - (75.0 - widget.height),
+                      bottom: 0,
                       child: SizedBox(
-                          height: 100.0,
-                          child: Row(
-                              children: widget.items.map((item) {
-                            return NavButton(
+                        height: widget.height,
+                        child: Row(
+                          children: widget.items.map((item) {
+                            return NavBarItemWidget(
                               onTap: _buttonTap,
                               position: _pos,
                               length: _length,
                               index: widget.items.indexOf(item),
-                              child: Center(child: item),
+                              child: Center(child: item.child),
+                              label: item.label,
+                              labelStyle: item.labelStyle,
                             );
-                          }).toList())),
+                          }).toList(),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -202,8 +246,11 @@ class CurvedNavigationBarState extends State<CurvedNavigationBar>
     setState(() {
       _startingPos = _pos;
       _endingIndex = index;
-      _animationController.animateTo(newPosition,
-          duration: widget.animationDuration, curve: widget.animationCurve);
+      _animationController.animateTo(
+        newPosition,
+        duration: widget.animationDuration,
+        curve: widget.animationCurve,
+      );
     });
   }
 }
