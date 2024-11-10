@@ -12,7 +12,7 @@ This package is a fork of the original curved_navigation_bar from https://github
 
 ```yaml
 dependencies:
-  curved_labeled_navigation_bar: ^2.0.3 #latest version
+  curved_labeled_navigation_bar: ^2.0.5 #latest version
 ```
 
 ### Easy to use
@@ -123,7 +123,7 @@ Scaffold(
           child: Center(
             child: Column(
               children: <Widget>[
-                Text(_page.toString(), textScaleFactor: 10.0),
+                Text(_page.toString(), textScaler: TextScaler.linear(10.0)),
                 ElevatedButton(
                   child: Text('Go To Page of index 1'),
                   onPressed: () {

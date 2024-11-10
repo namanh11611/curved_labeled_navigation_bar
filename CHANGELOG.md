@@ -1,3 +1,9 @@
+## [2.0.5]
+- Fix textScaler
+
+## [2.0.4]
+- Update README
+
 ## [2.0.3]
 - Integrate original changes
 
