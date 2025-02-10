@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:universal_io/io.dart';
 import 'dart:math';
 
 import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';

@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'package:universal_io/io.dart';
 
 class NavBarItemWidget extends StatelessWidget {
   final double position;

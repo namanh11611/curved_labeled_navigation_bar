@@ -1,3 +1,6 @@
+## [2.0.6]
+- Use universal_io instead of dart:io
+
 ## [2.0.5]
 - Fix textScaler
 
